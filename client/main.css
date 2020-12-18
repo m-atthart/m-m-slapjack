@@ -1,0 +1,14 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+#messageBox {
+  padding: 20px;
+  text-align: center;
+}
+
+#messageBox h1 {
+  font-family: Arial, sans-serif;
+}
