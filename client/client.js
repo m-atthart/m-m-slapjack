@@ -2,9 +2,19 @@ function writeEvent(text) {
     document.querySelector("#messageBox").innerHTML = `<h1>${text}</h1>`;
 }
 
-const sock = io();
+//const sock = io();
 
-sock.on("message", writeEvent);
+//sock.on("message", writeEvent);
+
+let currentCard = "43";
+let lastCard = "2";
+let secondLastCard = null;
+
+if (currentCard, lastCard && currentCard.value == '43') {
+    console.log("yup");
+} else {
+    console.log("no");
+}
 /*
 cardReceived = null;
 
