@@ -3,22 +3,20 @@ function writeEvent(text) {
 }
 
 //const sock = io();
+//let player = null;
 
 //sock.on("message", writeEvent);
+//sock.on("winner", (winner) => {
+//    displayWinMessage(winner);
+//});
 
-let currentCard = "43";
-let lastCard = "2";
-let secondLastCard = null;
-
-if (currentCard, lastCard && currentCard.value == '43') {
-    console.log("yup");
-} else {
-    console.log("no");
-}
 /*
 cardReceived = null;
 
-sock.on("cardflip", setStartTime);
+sock.on("cardflip", card => {
+    setStartTime();
+    displayCard(card);
+});
 
 function setStartTime() {
     cardReceived = Date.now();

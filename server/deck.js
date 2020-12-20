@@ -10,6 +10,10 @@ export default class Deck {
         return this.cards.length;
     }
 
+    get cardAtIdx(idx) {
+        return this.cards.slice(idx)[0]
+    }
+
     pop() {
         return this.cards.shift();
     }
@@ -18,11 +22,15 @@ export default class Deck {
         this.cards.push(card);
     }
 
+    pushToFront(card) {
+        this.cards.unshift(card);
+    }
+
     pushDeck(deck) {
         for (let i = 0; i < deck.numberOfCards; i++) {
-            this.push(deck[i]);
-            deck.pop();
+            this.push(deck.cards[i]);
         }
+        deck.cards = [];
     }
 
     shuffle() {
@@ -32,6 +40,11 @@ export default class Deck {
             this.cards[newIndex] = this.cards[i];
             this.cards[i] = oldValue;
         }
+    }
+
+    cutInTwo() {
+        let deckMidpoint = Math.ceil(this.numberOfCards / 2)
+        return [this.cards.slice(0, deckMidpoint), this.cards.slice(deckMidpoint, this.numberOfCards)]
     }
 }
 
