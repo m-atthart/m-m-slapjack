@@ -2,7 +2,7 @@ const http = require("http");
 const express = require("express");
 const socketio = require("socket.io");
 
-import SJGame from "./slapjack.js"
+const SJGame = require("./slapjack");
 
 const app = express();
 
@@ -46,16 +46,14 @@ io.on("connection", (sock) => {
         waitingPlayer = sock;
         io.emit("message", "waiting for player");
     }
-});
-
-sock.on("move", (player, move) => {
-    if (move == "flipCard") {
-        active_game.flipCard(player);
-    }
-    if (move == "end") {
-        endGame();
-    }
-
+    sock.on("move", (player, move) => {
+        if (move == "flipCard") {
+            active_game.flipCard(player);
+        }
+        if (move == "end") {
+            endGame();
+        }
+    });
 });
 
 server.on("error", (err) => {

@@ -1,6 +1,6 @@
-import Deck from "./deck.js";
+const Deck = require("./deck")
 
-export default class SJGame {
+class SJGame {
     constructor() {
         this.startDeck = new Deck();
         this.startDeck.shuffle();
@@ -22,6 +22,8 @@ export default class SJGame {
 
         this.lastMove = null;
         this.winner = null;
+
+
     }
 
     clearRoyals() {
@@ -160,3 +162,5 @@ export default class SJGame {
         this.checkEnd();
     }
 }
+
+module.exports = SJGame;
