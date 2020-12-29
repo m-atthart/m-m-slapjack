@@ -1,0 +1,11 @@
+{
+  "configurations": [
+    {
+      "type": "node",
+      "name": "Attach to Node",
+      "request": "attach",
+      "processId": "${command:PickProcess}"//,
+      //"preLaunchTask": "nodemonStart"
+    }
+  ]
+}

@@ -15,15 +15,14 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 let waitingPlayer = null;
+let p1Name = null;
+let p2Name = null;
 
 let active_game = null;
-let player1 = null;
-let player2 = null;
 
-function startGame(p1, p2) {
-    active_game = new SJGame();
-    player1 = p1;
-    player2 = p2;
+function startGame(player1, player2) {
+    setTimeout(() => console.log(p1Name, p2Name), 1000);
+    active_game = new SJGame(player1, p1Name, player2, p2Name);
 }
 
 function endGame() {
@@ -38,6 +37,7 @@ function endGame() {
 }
 
 io.on("connection", (sock) => {
+    console.log(sock.id);
     if (waitingPlayer) {
         [waitingPlayer, sock].forEach((s) => s.emit("message", "game start"));
         startGame(waitingPlayer, sock);
@@ -46,12 +46,27 @@ io.on("connection", (sock) => {
         waitingPlayer = sock;
         io.emit("message", "waiting for player");
     }
-    sock.on("move", (player, move) => {
-        if (move == "flipCard") {
-            active_game.flipCard(player);
+    sock.on("setName", (name) => {
+        if (waitingPlayer) {
+            p1Name = name;
+        } else {
+            p2Name = name;
         }
-        if (move == "end") {
-            endGame();
+    });
+    sock.on("flipCard", () => {
+        active_game.flipCard(sock);
+        console.log(`player ${sock.id} flipped`);
+    });
+    sock.on("slap", (timeToSlap) => {
+        active_game.slap(sock, timeToSlap);
+        console.log(`player ${sock.id} slapped`);
+    });
+    sock.on("endGame", () => {
+        endGame();
+    });
+    sock.on("disconnect", () => {
+        if (waitingPlayer && waitingPlayer == sock) {
+            waitingPlayer = null;
         }
     });
 });

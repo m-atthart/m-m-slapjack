@@ -1,13 +1,15 @@
 const Deck = require("./deck")
 
 class SJGame {
-    constructor() {
+    constructor(player1, p1Name, player2, p2Name) {
+        this.players = [player1, player2];
+        this.playerNames = [p1Name, p2Name];
+
         this.startDeck = new Deck();
-        this.startDeck.shuffle();
         this.cutDeck = this.startDeck.cutInTwo();
-        this.p1Deck = new Deck(this.cutDeck[0]);
-        this.p2Deck = new Deck(this.cutDeck[1]);
-        this.playDeck = new Deck([]);
+        this.p1Deck = new Deck(false, this.cutDeck[0]);
+        this.p2Deck = new Deck(false, this.cutDeck[1]);
+        this.playDeck = new Deck(false, []);
 
         this.royal = null;
         this.placedRoyal = null;
@@ -19,11 +21,10 @@ class SJGame {
         this.currentSlapped = null;
         this.p1TimeToSlap = null;
         this.p2TimeToSlap = null;
+        this.recentlySlapped = null;
 
         this.lastMove = null;
         this.winner = null;
-
-
     }
 
     clearRoyals() {
@@ -42,7 +43,7 @@ class SJGame {
     }
 
     getPlayerDeck(player) {
-        if (player == 1) {
+        if (player == this.players[0]) {
             return this.p1Deck;
         } else {
             return this.p2Deck;
@@ -53,12 +54,19 @@ class SJGame {
         this.clearRoyals();
         this.clearSlaps();
         this.getPlayerDeck(winner).pushDeck(this.playDeck);
+        setTimeout(() => this.players.forEach(player => player.emit("cardFlip", null)), 1000);
     }
 
     endGame(winner) {
-        clearRoyals();
-        clearSlaps();
+        this.clearRoyals();
+        this.clearSlaps();
         this.winner = winner;
+        this.players.forEach(player => player.emit("cardFlip", null));
+        if (winner == this.players[0]) {
+            this.players.forEach(player => player.emit("message", `${this.playerNames[0]} won`));
+        } else {
+            this.players.forEach(player => player.emit("message", `${this.playerNames[1]} won`));
+        }
     }
 
     checkSlap() {
@@ -88,37 +96,71 @@ class SJGame {
     }
 
     checkEnd() {
-        if (!this.checkSlap) {
-            if (this.p2Deck.numberOfCards == 0 && this.placedRoyal != 2) {
-                this.endGame(1);
-            } else if (this.p1Deck.numberOfCards == 0 && this.placedRoyal != 1) {
-                this.endGame(2);
-            } else if (this.royal == "J" && this.firstCard) {
-                this.endRound(lastMove);
-            } else if (this.royal == "Q" && this.secondCard) {
-                this.endRound(lastMove);
-            } else if (this.royal == "K" && this.thirdCard) {
-                this.endRound(lastMove);
-            } else if (this.royal == "A" && this.fourthCard) {
-                this.endRound(lastMove);
+        if (!this.checkSlap()) {
+            if (this.p2Deck.numberOfCards == 0 && this.placedRoyal != this.players[1]) {
+                this.endGame(this.playerNames[0]);
+            } else if (this.p1Deck.numberOfCards == 0 && this.placedRoyal != this.players[0]) {
+                this.endGame(this.playerNames[1]);
+            } else if (this.royal, this.firstCard && this.royal.value == "J") {
+                this.endRound(this.lastMove);
+            } else if (this.royal, this.secondCard && this.royal.value == "Q") {
+                this.endRound(this.lastMove);
+            } else if (this.royal, this.thirdCard && this.royal.value == "K") {
+                this.endRound(this.lastMove);
+            } else if (this.royal, this.fourthCard && this.royal.value == "A") {
+                this.endRound(this.lastMove);
+            }
+        } else {
+            if (this.royal, this.firstCard && this.royal.value == "J") {
+                this.lastMove = "pause";
+                this.recentlySlapped = 0;
+                setTimeout(() => {
+                    if (this.recentlySlapped == 0) {
+                        this.endRound(this.lastmove);
+                    }
+                });
+            } else if (this.royal, this.secondCard && this.royal.value == "Q") {
+                this.lastMove = "pause";
+                this.recentlySlapped = 0;
+                setTimeout(() => {
+                    if (this.recentlySlapped == 0) {
+                        this.endRound(this.lastmove);
+                    }
+                });
+            } else if (this.royal, this.thirdCard && this.royal.value == "K") {
+                this.lastMove = "pause";
+                this.recentlySlapped = 0;
+                setTimeout(() => {
+                    if (this.recentlySlapped == 0) {
+                        this.endRound(this.lastmove);
+                    }
+                });
+            } else if (this.royal, this.fourthCard && this.royal.value == "A") {
+                this.lastMove = "pause";
+                this.recentlySlapped = 0;
+                setTimeout(() => {
+                    if (this.recentlySlapped == 0) {
+                        this.endRound(this.lastmove);
+                    }
+                });
             }
         }
     }
 
     flipCard(player) {
-        if (lastMove != player) {
+        if (this.lastMove != player && this.lastMove != "pause") {
             if (!this.currentSlapped) {
-                nextCard = this.getPlayerDeck(player).pop();
-                if (["J", "Q", "K", "A"].includes(nextCard)) {
+                let nextCard = this.getPlayerDeck(player).pop();
+                if (["J", "Q", "K", "A"].includes(nextCard.value)) {
                     this.clearRoyals();
                     this.royal = nextCard;
                     this.placedRoyal = player;
                     this.lastMove = player;
                 } else {
                     if (this.royal) {
-                        if (["Q", "K", "A"].includes(this.royal) && this.firstCard) {
-                            if (["K", "A"].includes(this.royal) && this.firstCard, this.secondCard) {
-                                if (["A"].includes(this.royal) && this.firstCard, this.secondCard, this.thirdCard) {
+                        if (["Q", "K", "A"].includes(this.royal.value) && this.firstCard) {
+                            if (["K", "A"].includes(this.royal.value) && this.secondCard) {
+                                if (["A"].includes(this.royal.value) && this.thirdCard) {
                                     this.fourthCard = nextCard;
                                 } else {
                                     this.thirdCard = nextCard;
@@ -129,36 +171,54 @@ class SJGame {
                         } else {
                             this.firstCard = nextCard;
                         }
+                        if (this.royal.value == "J" && this.firstCard) {
+                            this.lastMove = player;
+                        } else if (this.royal.value == "Q" && this.secondCard) {
+                            this.lastMove = player;
+                        } else if (this.royal.value == "K" && this.thirdCard) {
+                            this.lastMove = player;
+                        } else if (this.royal.value == "A" && this.fourthCard) {
+                            this.lastMove = player;
+                        }
                     } else {
                         this.lastMove = player;
                     }
                 }
                 this.playDeck.push(nextCard);
             } else if (this.currentSlapped && this.currentSlapped != player) {
-                this.endRound(currentSlapped);
+                this.endRound(this.currentSlapped);
             }
+            this.players.forEach(player => player.emit("cardFlip", this.playDeck.cardAtIdx(-1)));
             this.checkEnd();
-        } 
+            console.log("PlayDeck");
+            console.log(this.playDeck.cards);
+            console.log("P1Deck");
+            console.log(this.p1Deck.cards);
+            console.log("P2Deck");
+            console.log(this.p2Deck.cards);
+        }
     }
 
-    slap (player, timeToSlap) {
+    slap(player, timeToSlap) {
         if (this.checkSlap()) {
-            currentSlapped = player;
-            if (player == 1 && !p1TimeToSlap) {
-                p1TimeToSlap = timeToSlap;
-            } else if (player == 2 && !p2TimeToSlap) {
-                p2TimeToSlap = timeToSlap;
+            this.currentSlapped = player;
+            if (player == this.players[0] && !this.p1TimeToSlap) {
+                this.p1TimeToSlap = timeToSlap;
+            } else if (player == this.players[1] && !this.p2TimeToSlap) {
+                this.p2TimeToSlap = timeToSlap;
             }
-            if (p1TimeToSlap && p2TimeToSlap) {
-                if (p1TimeToSlap < p2TimeToSlap) {
+            if (this.p1TimeToSlap && this.p2TimeToSlap) {
+                if (this.p1TimeToSlap < this.p2TimeToSlap) {
                     this.endRound(1);
                 } else {
                     this.endRound(2);
                 }
             }
+            this.recentlySlapped = 1;
         } else {
-            this.playDeck.pushToFront(getPlayerDeck(player).pop());
+            this.playDeck.pushToFront(this.getPlayerDeck(player).pop());
         }
+        this.players.forEach(player => player.emit("cardFlip", this.playDeck.cardAtIdx(-1)));
         this.checkEnd();
     }
 }

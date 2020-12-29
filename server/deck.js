@@ -2,8 +2,11 @@ const SUITS = ["♠", "♣", "♥", "♦"];
 const VALUES = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
 
 class Deck {
-    constructor(cards = freshDeck()) {
+    constructor(shuffled = false, cards = testDeck()) {
         this.cards = cards;
+        if (shuffled) {
+            this.shuffle();
+        }
     }
 
     get numberOfCards() {
@@ -73,6 +76,13 @@ function freshDeck() {
             return new Card(suit, value);
         });
     });
+}
+
+function testDeck() {
+    let newDeck = [];
+    newDeck.push(new Card("♠", "10"));
+    newDeck.push(new Card("♠", "8"));
+    return newDeck;
 }
 
 module.exports = Deck;

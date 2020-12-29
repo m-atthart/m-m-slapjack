@@ -6,9 +6,28 @@
     <title>M&M Slapjack</title>
     <link rel="stylesheet" href="main.css" />
     <script src="/socket.io/socket.io.js" defer></script>
-    <script src="client.js" type="module"></script>
+    <script src="client.js" defer></script>
   </head>
   <body>
     <div id="messageBox"></div>
+    <div class="name-card">
+      <h3>Enter your name:</h3>
+      <input type="text" id="name">
+      <button id="name-submit">Enter Name</button>
+    </div>
+    <div class="play-card">
+      <div class="cards">
+        <h2>opponent</h2>
+        <h4 id="opponent-cards"></h4>
+        <h2>play</h2>
+        <h4 id="play-card"></h4>
+        <h2>you</h2>
+        <h4 id="your-cards"></h4>
+      </div>
+      <div class="controls">
+        <button id="flip-card">Flip Card</button>
+        <button id="slap">Slap</button>
+      </div>
+    </div>
   </body>
 </html>
